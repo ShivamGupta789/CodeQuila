@@ -84,15 +84,29 @@ export default function UploadSection({ onUploadComplete }) {
                     Support for high-resolution Video (.mp4, .mov), Audio (.wav, .mp3) and Images (.jpg, .png)
                 </p>
                 
-                <label className="cyber-button cursor-pointer">
-                    BROWSE FILES
-                    <input 
-                        type="file" 
-                        className="hidden" 
-                        onChange={(e) => handleFile(e.target.files[0])}
-                        accept="video/*,audio/*,image/*"
-                    />
-                </label>
+                <div className="flex flex-col sm:flex-row gap-4">
+                  <label className="cyber-button cursor-pointer flex items-center justify-center">
+                      BROWSE LOCAL FILES
+                      <input 
+                          type="file" 
+                          className="hidden" 
+                          onChange={(e) => handleFile(e.target.files[0])}
+                          accept="video/*,audio/*,image/*"
+                      />
+                  </label>
+                  <button className="px-8 py-3 rounded-full bg-[#ffffff05] border border-[#ffffff10] text-white font-semibold hover:bg-[#ffffff10] transition-colors flex items-center justify-center gap-2">
+                    <Activity className="w-4 h-4 text-[#0fb]" />
+                    SCAN SOURCE URL
+                  </button>
+                </div>
+                
+                <div className="mt-8 flex items-center gap-4 opacity-30 text-[8px] font-mono tracking-widest grayscale hover:grayscale-0 transition-all cursor-default">
+                    <span>SOCIAL MEDIA SCAN:</span>
+                    <span>X</span>
+                    <span>LINKEDIN</span>
+                    <span>TIKTOK</span>
+                    <span>META</span>
+                </div>
                 
                 {/* Decorative corners */}
                 <div className="absolute top-4 left-4 w-8 h-8 border-t-2 border-l-2 border-[#00f2ff40]"></div>

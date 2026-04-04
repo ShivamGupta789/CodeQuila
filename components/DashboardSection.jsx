@@ -115,21 +115,33 @@ export default function DashboardSection() {
                    </motion.div>
                 </div>
 
-                {/* Sub charts */}
-                <div className="grid md:grid-cols-2 gap-6 mt-8">
-                    <div className="glass bg-[#ffffff02] p-4 flex items-center gap-4">
-                       <BarChart3 className="w-8 h-8 text-[#00f2ff] opacity-40" />
-                       <div>
-                          <div className="text-[10px] font-mono text-[#ffffff40]">LATENT DEVIATION</div>
-                          <div className="text-xl font-black">0.0234</div>
-                       </div>
+                {/* Sub charts and Model Status */}
+                <div className="flex flex-col gap-6 mt-8">
+                    <div className="grid md:grid-cols-2 gap-6">
+                        <div className="glass bg-[#ffffff02] p-4 flex items-center gap-4">
+                           <BarChart3 className="w-8 h-8 text-[#00f2ff] opacity-40" />
+                           <div>
+                              <div className="text-[10px] font-mono text-[#ffffff40]">LATENT DEVIATION</div>
+                              <div className="text-xl font-black">0.0234</div>
+                           </div>
+                        </div>
+                        <div className="glass bg-[#ffffff02] p-4 flex items-center gap-4">
+                           <TrendingUp className="w-8 h-8 text-[#4ade80] opacity-40" />
+                           <div>
+                              <div className="text-[10px] font-mono text-[#ffffff40]">MODEL CONFIDENCE</div>
+                              <div className="text-xl font-black">STABLE</div>
+                           </div>
+                        </div>
                     </div>
-                    <div className="glass bg-[#ffffff02] p-4 flex items-center gap-4">
-                       <TrendingUp className="w-8 h-8 text-[#7000ff] opacity-40" />
-                       <div>
-                          <div className="text-[10px] font-mono text-[#ffffff40]">MODEL CONFIDENCE</div>
-                          <div className="text-xl font-black">HIGH</div>
-                       </div>
+
+                    <div className="flex flex-col sm:flex-row justify-between items-center px-4 py-3 glass-glow text-[9px] font-mono tracking-[0.2em] uppercase opacity-60">
+                        <div className="flex items-center gap-2">
+                            <span className="w-1.5 h-1.5 rounded-full bg-[#4ade80] animate-pulse"></span>
+                            Continuous Learning: Active
+                        </div>
+                        <div className="flex items-center gap-2">
+                           Engine Model: Multi_Trans_v4.2.1
+                        </div>
                     </div>
                 </div>
              </motion.div>
