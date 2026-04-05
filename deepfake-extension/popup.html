@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Deepfake Detector</title>
+    <link rel="stylesheet" href="popup.css">
+</head>
+<body>
+    <div class="container">
+        <h2>Deepfake Detector</h2>
+        
+        <div class="action-area">
+            <button id="detectBtn">Detect Deepfake</button>
+        </div>
+
+        <div id="resultContainer" class="result-box hidden">
+            <p class="score-label">Deepfake Probability:</p>
+            <p id="scoreValue" class="score-value">-</p>
+            <p id="detailsText" class="details"></p>
+        </div>
+    </div>
+    <script src="popup.js"></script>
+</body>
+</html>

@@ -1,0 +1,30 @@
+{
+  "manifest_version": 3,
+  "name": "Deepfake Detector",
+  "version": "1.0",
+  "description": "Detects deepfakes in images, videos, audio, and text using a local ML backend.",
+  "permissions": [
+    "activeTab",
+    "scripting",
+    "storage"
+  ],
+  "host_permissions": [
+    "http://127.0.0.1/*",
+    "http://localhost/*",
+    "<all_urls>"
+  ],
+  "background": {
+    "service_worker": "background.js"
+  },
+  "content_scripts": [
+    {
+      "matches": ["<all_urls>"],
+      "js": ["content.js"],
+      "css": ["content.css"]
+    }
+  ],
+  "action": {
+    "default_popup": "popup.html",
+    "default_title": "Deepfake Detector Status"
+  }
+}

@@ -4,11 +4,9 @@ import { useState, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Upload, File,X, Binary, Activity } from 'lucide-react';
 
-export default function UploadSection({ onUploadComplete }) {
+export default function UploadSection({ onUploadComplete, isScanning, scanProgress }) {
   const [dragActive, setDragActive] = useState(false);
   const [file, setFile] = useState(null);
-  const [isScanning, setIsScanning] = useState(false);
-  const [scanProgress, setScanProgress] = useState(0);
 
   const handleDrag = (e) => {
     e.preventDefault();
@@ -29,26 +27,9 @@ export default function UploadSection({ onUploadComplete }) {
     }
   };
 
-  const handleFile = (file) => {
-    setFile(file);
-    startScanning();
-  };
-
-  const startScanning = () => {
-    setIsScanning(true);
-    let progress = 0;
-    const interval = setInterval(() => {
-      progress += Math.random() * 5;
-      if (progress >= 100) {
-          clearInterval(interval);
-          setScanProgress(100);
-          setTimeout(() => {
-              onUploadComplete(file);
-          }, 1000);
-      } else {
-          setScanProgress(progress);
-      }
-    }, 100);
+  const handleFile = (selectedFile) => {
+    setFile(selectedFile);
+    onUploadComplete(selectedFile);
   };
 
   return (

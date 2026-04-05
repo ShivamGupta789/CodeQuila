@@ -7,13 +7,14 @@ import HeroSection from '@/components/HeroSection';
 import FeaturesSection from '@/components/FeaturesSection';
 import UploadSection from '@/components/UploadSection';
 import DashboardSection from '@/components/DashboardSection';
-import ScannerCursor from '@/components/ScannerCursor';
-import TerminalLogs from '@/components/TerminalLogs';
 
 export default function Home() {
   const [loading, setLoading] = useState(true);
   const [activeView, setActiveView] = useState('landing');
   const [scrollProgress, setScrollProgress] = useState(0);
+  const [isScanning, setIsScanning] = useState(false);
+  const [scanProgress, setScanProgress] = useState(0);
+  const [analysisResult, setAnalysisResult] = useState(null);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -33,9 +34,40 @@ export default function Home() {
     setLoading(false);
   };
 
-  const handleUploadComplete = (file) => {
-    setActiveView('dashboard');
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+  const handleUploadComplete = async (file) => {
+    setIsScanning(true);
+    setScanProgress(10); // Start progress
+
+    const formData = new FormData();
+    formData.append('media', file);
+    
+    try {
+      setScanProgress(30);
+      const response = await fetch('http://localhost:8000/api/v1/verify', {
+        method: 'POST',
+        body: formData,
+      });
+      
+      if (!response.ok) throw new Error('Inference failed');
+      
+      setScanProgress(80);
+      const data = await response.json();
+      setAnalysisResult(data);
+      
+      setScanProgress(100);
+      setTimeout(() => {
+          setActiveView('dashboard');
+          setIsScanning(false);
+          setScanProgress(0);
+          window.scrollTo({ top: 0, behavior: 'smooth' });
+      }, 800);
+      
+    } catch (error) {
+      console.error('Analysis failed:', error);
+      setIsScanning(false);
+      setScanProgress(0);
+      alert("Verification failed. Ensure the TrustLens backend is running on localhost:8000.");
+    }
   };
 
   const startAnalysis = () => {
@@ -53,8 +85,6 @@ export default function Home() {
   return (
     <div className="min-h-screen relative overflow-hidden bg-[#020710] selection:bg-[#00f2ff20]">
       {/* Premium UI Enhancements */}
-      <ScannerCursor />
-      <TerminalLogs />
       
       {/* Side Data Stream (Left) */}
       <div className="fixed left-4 top-1/2 -translate-y-1/2 z-[60] flex flex-col gap-8 opacity-10 pointer-events-none hidden xl:flex text-glow">
@@ -99,7 +129,11 @@ export default function Home() {
           >
             <HeroSection onStart={startAnalysis} />
             <FeaturesSection />
-            <UploadSection onUploadComplete={handleUploadComplete} />
+            <UploadSection 
+              onUploadComplete={handleUploadComplete} 
+              isScanning={isScanning}
+              scanProgress={scanProgress}
+            />
           </motion.div>
         ) : (
           <motion.div 
@@ -118,9 +152,9 @@ export default function Home() {
                   ← BACK TO GATEWAY
                 </button>
                 <h2 className="text-3xl font-black mt-4 uppercase italic">Forensic Analysis Report</h2>
-                <p className="text-[#ffffff40] text-sm">Session ID: {Math.random().toString(36).substr(2, 9).toUpperCase()}</p>
+                <p className="text-[#ffffff40] text-sm">Session ID: {analysisResult?.session_id || "TL-UNKNOWN"}</p>
               </div>
-              <DashboardSection />
+              <DashboardSection data={analysisResult} />
             </div>
           </motion.div>
         )}

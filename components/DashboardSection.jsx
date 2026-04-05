@@ -5,15 +5,14 @@ import { Activity, ShieldCheck, AlertTriangle, CheckCircle, BarChart3, PieChart,
 import { useEffect, useState } from 'react';
 import AccuracyGauge from '@/components/AccuracyGauge';
 
-export default function DashboardSection() {
+export default function DashboardSection({ data }) {
   const [score, setScore] = useState(0);
 
   useEffect(() => {
-    const interval = setTimeout(() => {
-      setScore(94.8);
-    }, 500);
-    return () => clearTimeout(interval);
-  }, []);
+    if (data) {
+      setScore(data.overall_authenticity_score);
+    }
+  }, [data]);
 
   return (
     <section className="py-24 relative">
@@ -34,11 +33,11 @@ export default function DashboardSection() {
               <AccuracyGauge score={score} size={280} />
               
               <div className="mt-4 flex flex-col items-center gap-4">
-                  <div className="px-4 py-1.5 bg-[#00f2ff10] border border-[#00f2ff40] rounded-full text-[#00f2ff] font-mono text-[10px] tracking-widest uppercase">
-                    AUTHENTICITY DETECTED
+                  <div className={`px-4 py-1.5 border rounded-full font-mono text-[10px] tracking-widest uppercase ${data?.overall_authenticity_score > 60 ? 'bg-[#00f2ff10] border-[#00f2ff40] text-[#00f2ff]' : 'bg-[#ff005510] border-[#ff005540] text-[#ff0055]'}`}>
+                    {data?.overall_authenticity_score > 60 ? "AUTHENTICITY DETECTED" : "MANIPULATION DETECTED"}
                   </div>
                   <p className="text-center text-[#ffffff40] text-sm max-w-[200px]">
-                    Analysis confirms 94.8% source alignment.
+                    Analysis confirms {data?.overall_authenticity_score}% source alignment.
                   </p>
               </div>
             </motion.div>
@@ -54,13 +53,13 @@ export default function DashboardSection() {
                  RISK PARAMETERS
                </h3>
                
-               <div className="flex flex-col gap-4">
-                 {[
-                   { label: "LipSync Deviation", val: "0.002%", color: "#00f2ff" },
-                   { label: "Artifact Density", val: "Lo-Pass", color: "#00f2ff" },
-                   { label: "Neural Signature", val: "Clean", color: "#00f2ff" },
-                   { label: "Risk Level", val: "Low", color: "#00f2ff" }
-                 ].map((stat, i) => (
+                <div className="flex flex-col gap-4">
+                  {[
+                    { label: "LipSync Deviation", val: data?.forensic_analysis?.lip_sync_deviation || "0.00%", color: "#00f2ff" },
+                    { label: "Artifact Density", val: data?.forensic_analysis?.artifact_density || "N/A", color: "#00f2ff" },
+                    { label: "Neural Signature", val: data?.forensic_analysis?.neural_signature || "N/A", color: "#00f2ff" },
+                    { label: "Risk Level", val: data?.risk_level || "N/A", color: data?.risk_level === 'LOW' ? "#00f2ff" : "#ff0055" }
+                  ].map((stat, i) => (
                    <div key={i} className="flex justify-between items-center border-b border-[#ffffff05] pb-2">
                      <span className="text-[10px] font-mono text-[#ffffff40] uppercase">{stat.label}</span>
                      <span className="text-[12px] font-mono text-white">{stat.val}</span>
@@ -90,9 +89,12 @@ export default function DashboardSection() {
                    </div>
                 </div>
                 
-                {/* Simulated Heatmap visualization */}
+                {/* Dynamic Heatmap visualization */}
                 <div className="relative aspect-video rounded-xl bg-black border border-[#ffffff10] overflow-hidden group cursor-crosshair">
-                   <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1620712943543-bcc4628c9759?q=80&w=1543&auto=format&fit=crop')] bg-cover opacity-60"></div>
+                   <div 
+                     className="absolute inset-0 bg-cover bg-center opacity-60"
+                     style={{ backgroundImage: `url(${data?.forensic_analysis?.heatmap_overlay_url || 'https://images.unsplash.com/photo-1620712943543-bcc4628c9759?q=80&w=1543&auto=format&fit=crop'})` }}
+                   ></div>
                    <div className="absolute inset-0 bg-gradient-to-tr from-[#00f2ff10] via-transparent to-[#7000ff20]"></div>
                    
                    {/* Scanning Grid Overlay */}
@@ -105,14 +107,18 @@ export default function DashboardSection() {
                     className="absolute left-0 right-0 h-[1px] bg-[#00f2ff] shadow-[0_0_10px_#00f2ff] z-10"
                    />
                    
-                   {/* Detection boxes */}
-                   <motion.div 
-                     initial={{ opacity: 0 }}
-                     animate={{ opacity: 1 }}
-                     className="absolute top-1/4 left-1/3 w-32 h-32 border border-[#00f2ff] rounded-lg shadow-[0_0_20px_rgba(0,242,255,0.2)] flex items-end p-2"
-                   >
-                      <div className="text-[8px] font-mono text-[#00f2ff] bg-[#00f2ff10] px-1">LIP_SYNC: 99.1%</div>
-                   </motion.div>
+                   {/* Conditional Detection boxes (e.g. for Video) */}
+                   {data?.type === 'VIDEO' && (
+                     <motion.div 
+                       initial={{ opacity: 0 }}
+                       animate={{ opacity: 1 }}
+                       className="absolute top-1/4 left-1/3 w-32 h-32 border border-[#00f2ff] rounded-lg shadow-[0_0_20px_rgba(0,242,255,0.2)] flex items-end p-2"
+                     >
+                        <div className="text-[8px] font-mono text-[#00f2ff] bg-[#00f2ff10] px-1">
+                            LIP_SYNC: {data?.forensic_analysis?.lip_sync_deviation || "N/A"}
+                        </div>
+                     </motion.div>
+                   )}
                 </div>
 
                 {/* Sub charts and Model Status */}
@@ -122,14 +128,14 @@ export default function DashboardSection() {
                            <BarChart3 className="w-8 h-8 text-[#00f2ff] opacity-40" />
                            <div>
                               <div className="text-[10px] font-mono text-[#ffffff40]">LATENT DEVIATION</div>
-                              <div className="text-xl font-black">0.0234</div>
+                              <div className="text-xl font-black">{data?.forensic_analysis?.latent_distortion_value || "0.0000"}</div>
                            </div>
                         </div>
                         <div className="glass bg-[#ffffff02] p-4 flex items-center gap-4">
                            <TrendingUp className="w-8 h-8 text-[#4ade80] opacity-40" />
                            <div>
                               <div className="text-[10px] font-mono text-[#ffffff40]">MODEL CONFIDENCE</div>
-                              <div className="text-xl font-black">STABLE</div>
+                              <div className="text-xl font-black">{data?.overall_authenticity_score > 80 ? "STABLE" : "SENSITIVE"}</div>
                            </div>
                         </div>
                     </div>

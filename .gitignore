@@ -31,3 +31,41 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# Node.js
+**/node_modules/
+.next/
+out/
+build/
+dist/
+
+# Python
+**/__pycache__/
+*.pyc
+venv/
+.venv/
+env/
+.env/
+
+# Project Specific
+backend/storage/temp/*
+backend/storage/heatmaps/*
+!backend/storage/temp/.gitkeep
+!backend/storage/heatmaps/.gitkeep
+
+# Logs
+server_log*.txt
+inspection*.txt
+verify_recon.py
+model_structure.txt
+robust_inspection_output.txt
+final_verified_server_log.txt
+final_final_log.txt
+final_server_log.txt
+test_api_output.txt
+
+# OS File
+.DS_Store
+Thumbs.db
+ 
+*extra/
